@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Resume Suggestions - SkillMatch</title>
+  <link rel="stylesheet" href="improvement.css" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">SKILLMATCH</div>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="improvement.html" class="active">Suggestions</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="upload-section">
+      <h1>Upload Your Resume</h1>
+      <form id="resumeForm">
+        <input type="file" name="resume" accept=".pdf,.doc,.docx" required />
+        <button type="submit">Analyze Resume</button>
+      </form>
+    </section>
+
+    <section class="suggestions-section" id="suggestions">
+      <h2>Improvement Tips & Suggestions</h2>
+      <ul id="suggestionsList">
+        <!-- These will be populated by JS after backend response -->
+        <li>• Make your objective statement more specific.</li>
+        <li>• Include quantifiable achievements under work experience.</li>
+        <li>• Add keywords relevant to the job description.</li>
+        <li>• Improve formatting for readability.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

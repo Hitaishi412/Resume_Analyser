@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Job Description Comparison</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f8fb;
+      padding: 40px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #004d40;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      max-width: 700px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 20px;
+    }
+
+    textarea, input[type="file"] {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #00796b;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    #result, #results {
+      margin-top: 30px;
+      background: #e0f2f1;
+      padding: 20px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .highlight {
+      font-weight: bold;
+      color: #00796b;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Compare Resume with Job Description</h1>
+
+  <div class="container">
+    <form id="compareForm" enctype="multipart/form-data">
+      <label for="resume">Upload Your Resume (PDF or DOCX):</label>
+      <input type="file" id="resume" name="resume" accept=".pdf,.docx" required />
+
+      <label for="job-description">Paste Job Description:</label>
+      <textarea id="job-description" name="jd_text" rows="6" placeholder="Paste the job description here..." required></textarea>
+
+      <button id="analyze-btn" type="submit">Analyze</button>
+    </form>
+
+    <div id="result">
+      <h2>Match Result</h2>
+      <p id="resultText">Analyzing...</p>
+    </div>
+
+    <div id="results" style="display: none;">
+      <p id="matchScore"></p>
+      <div id="feedback"></div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('compareForm');
+    const resultDiv = document.getElementById('result');
+    const resultText = document.getElementById('resultText');
+    const resultsBox = document.getElementById('results');
+    const matchScore = document.getElementById('matchScore');
+    const feedback = document.getElementById('feedback');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+
+      resultDiv.style.display = 'block';
+      resultText.innerText = 'Analyzing...';
+
+      try {
+        console.log("Sending to backend...");
+        const response = await fetch('http://127.0.0.1:5000/analyze', {
+          method: 'POST',
+          body: formData
+        });
+
+        console.log("Received response:", response);
+
+        const data = await response.json();
+        console.log("Parsed JSON:", data);
+
+        if (response.ok) {
+          resultText.innerText = '';
+
+          matchScore.innerHTML = `Match Score: <span class="highlight">${data.final_score.final_score}%</span>`;
+
+          const missingSkills = data.skill_match.missing_skills.join(', ') || 'None';
+          const suggestions = data.final_score.feedback.map(item => `<li>${item}</li>`).join('');
+
+          feedback.innerHTML = `
+            <p><span class="highlight">Missing Skills:</span> ${missingSkills}</p>
+            <p><strong>Suggestions:</strong></p>
+            <ul>${suggestions}</ul>
+          `;
+
+          resultsBox.style.display = 'block';
+        } else {
+          resultText.innerText = 'Error analyzing the resume. Please try again.';
+        }
+      } catch (error) {
+        console.error('❌ Fetch error:', error);
+        resultText.innerText = 'Server error. Please try again later.';
+      }
+    });
+  </script>
+
+  <p><a href="index.html#services">← Back to Services</a></p>
+</body>
+</html>
